@@ -5,53 +5,55 @@ import { ConfigService } from './config/config.service';
 export class AppService {
     private idStrava: string;
     private tokenStrava: string;
-    
+
     constructor(
         private readonly httpService: HttpService,
-        private readonly config: ConfigService
+        private readonly config: ConfigService,
     ) {
         this.idStrava = this.config.get('API_STRAVA_ATHLETE_ID');
         this.tokenStrava = this.config.get('API_STRAVA_TOKEN');
     }
-    
+
+    /**
+     * @param url string
+     */
     async baseGetMethod(url: string) {
         const authStrava: object = {
             headers: {
-                'Authorization': this.tokenStrava
-            }
+                Authorization: this.tokenStrava,
+            },
         };
 
         return await this.httpService
             .get(url, authStrava)
-            .toPromise()
-            .then(response => {
-                return response.data;
-            })
-            .catch(error => {
-                throw new HttpException(error.message, error.status);
-            })
-            ;
+            .toPromise();
     }
+
     /**
      * Fetch athlete stats
      */
-    fetchAthleteStats() {
+    async fetchAthleteStats() {
         const url = 'https://www.strava.com/api/v3/athlete/activities';
-        return this.baseGetMethod(url);
+        return await this.baseGetMethod(url).then(response => {
+            return response.data;
+        });
     }
 
     /**
      * Fetch athlete infos by ids
      */
-    fetchAthleteInfos() {
+    async fetchAthleteInfos() {
         const url: string = `https://www.strava.com/api/v3/athletes/${this.idStrava}`;
-        return this.baseGetMethod(url);
+        return await this.baseGetMethod(url)
+        .then(response => {
+            return response.data;
+        });
     }
 
     /**
      * Fetch last activities
      */
-    fetchAthleteActivities() {
+    async fetchAthleteLastActivity() {
         /**
          * The parameters could be:
          *  before: integer (timestamp)
@@ -61,6 +63,23 @@ export class AppService {
          */
         const perPage = '?per_page=5';
         const url: string = 'https://www.strava.com/api/v3/athlete/activities' + perPage;
-        return this.baseGetMethod(url);
+        return await this.baseGetMethod(url)
+        .then(response => {
+            return response.data[0];
+        });
+    }
+
+    /**
+     * Fetch activity by id
+     * TODO : fetch activity with only one request
+     */
+    async fetchAthleteActivityById() {
+        const lastActivity: any = await this.fetchAthleteLastActivity();
+        const activityId: number = lastActivity.id;
+        const url = `https://www.strava.com/api/v3/activities/${activityId}`;
+
+        return await this.baseGetMethod(url).then(response => {
+            return response.data;
+        });
     }
 }

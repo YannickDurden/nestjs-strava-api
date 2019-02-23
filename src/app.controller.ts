@@ -26,6 +26,14 @@ export class AppController {
      */
     @Get('/strava/activities')
     getAthleteActivities() {
-        return this.appService.fetchAthleteActivities();
+        return this.appService.fetchAthleteLastActivity();
+    }
+
+    /**
+     * @return last activity
+     */
+    @Get('/strava/activity')
+    getAthleteLastActivity() {
+        return this.appService.fetchAthleteActivityById();
     }
 }
