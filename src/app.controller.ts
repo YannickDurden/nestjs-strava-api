@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -32,8 +32,8 @@ export class AppController {
     /**
      * @return last activity
      */
-    @Get('/strava/activity')
-    getAthleteLastActivity() {
-        return this.appService.fetchAthleteActivityById();
+    @Get('/strava/activity/:id')
+    getAthleteLastActivity(@Param('id') activityId: number) {
+        return this.appService.fetchAthleteActivityById(activityId);
     }
 }

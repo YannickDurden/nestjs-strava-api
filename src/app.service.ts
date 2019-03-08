@@ -34,7 +34,8 @@ export class AppService {
      */
     async fetchAthleteStats() {
         const url = 'https://www.strava.com/api/v3/athlete/activities';
-        return await this.baseGetMethod(url).then(response => {
+        return await this.baseGetMethod(url)
+        .then(response => {
             return response.data;
         });
     }
@@ -65,7 +66,7 @@ export class AppService {
         const url: string = 'https://www.strava.com/api/v3/athlete/activities' + perPage;
         return await this.baseGetMethod(url)
         .then(response => {
-            return response.data[0];
+            return response.data;
         });
     }
 
@@ -73,12 +74,11 @@ export class AppService {
      * Fetch activity by id
      * TODO : fetch activity with only one request
      */
-    async fetchAthleteActivityById() {
-        const lastActivity: any = await this.fetchAthleteLastActivity();
-        const activityId: number = lastActivity.id;
+    async fetchAthleteActivityById(activityId: number) {
         const url = `https://www.strava.com/api/v3/activities/${activityId}`;
 
-        return await this.baseGetMethod(url).then(response => {
+        return await this.baseGetMethod(url)
+        .then(response => {
             return response.data;
         });
     }
